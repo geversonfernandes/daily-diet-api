@@ -22,4 +22,33 @@ export async function usersRoutes(app: FastifyInstance) {
 
     return reply.status(201).send(`Usuário ${name} criado com sucesso`)
   })
+
+  app.get<{ Params: { user_id: string; meal_id: string } }>(
+    '/users/:user_id',
+    async (request, reply) => {
+      const userId = request.params.user_id
+
+      const meals = await knex('meals')
+        .where('user_id', userId)
+        .count('* as total')
+
+      const totalMeals = meals[0].total
+
+      const diet = await knex('meals')
+        .where('user_id', userId)
+        .andWhere('isDiet', true)
+        .count('* as totalDiet')
+
+      const totalDiet = diet[0].totalDiet
+
+      const notDiet = await knex('meals')
+        .where('user_id', userId)
+        .andWhere('isDiet', false)
+        .count('* as totalNotDiet')
+
+      const totalNotDiet = notDiet[0].totalNotDiet
+
+      return reply.status(200).send({ totalMeals, totalDiet, totalNotDiet })
+    },
+  )
 }
