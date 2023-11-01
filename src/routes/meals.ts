@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify'
 import { z } from 'zod'
 import { knex } from '../database'
 import { randomUUID } from 'crypto'
+import { stringify } from 'querystring'
 
 export async function mealsRoutes(app: FastifyInstance) {
   app.post<{ Params: { user_id: string } }>(
@@ -70,6 +71,17 @@ export async function mealsRoutes(app: FastifyInstance) {
           .status(404)
           .send(`Refeição não encontrada ou já foi deletada`)
       }
+    },
+  )
+
+  app.get<{ Params: { user_id: string } }>(
+    '/meals/:user_id',
+    async (request, reply) => {
+      const userId = request.params.user_id
+
+      const datas = await knex('meals').select('*').where('user_id', userId)
+
+      return reply.status(200).send(datas)
     },
   )
 }
