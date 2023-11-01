@@ -20,6 +20,6 @@ export async function usersRoutes(app: FastifyInstance) {
       password,
     })
 
-    return reply.status(201).send('Usuário criado com sucesso')
+    return reply.status(201).send(`Usuário ${name} criado com sucesso`)
   })
 }

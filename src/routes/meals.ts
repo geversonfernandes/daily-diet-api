@@ -27,7 +27,7 @@ export async function mealsRoutes(app: FastifyInstance) {
         user_id: userId,
       })
 
-      return reply.status(201).send('Refeição criada com sucesso')
+      return reply.status(201).send(`Refeição ${name} criada com sucesso`)
     },
   )
 }
