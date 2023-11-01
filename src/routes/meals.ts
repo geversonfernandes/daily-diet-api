@@ -17,8 +17,6 @@ export async function mealsRoutes(app: FastifyInstance) {
 
       const userId = request.params.user_id
 
-      console.log(userId)
-
       await knex('meals').insert({
         id: randomUUID(),
         name,
@@ -28,6 +26,29 @@ export async function mealsRoutes(app: FastifyInstance) {
       })
 
       return reply.status(201).send(`Refeição ${name} criada com sucesso`)
+    },
+  )
+
+  app.patch<{ Params: { user_id: string; meal_id: string } }>(
+    '/meals/:user_id/:meal_id',
+    async (request, reply) => {
+      const newMealsSchema = z.object({
+        name: z.string().optional(),
+        description: z.string().optional(),
+        isDiet: z.boolean().optional(),
+      })
+
+      const data = newMealsSchema.parse(request.body)
+
+      const userId = request.params.user_id
+      const mealId = request.params.meal_id
+
+      await knex('meals')
+        .update(data)
+        .where('user_id', userId)
+        .where('id', mealId)
+
+      return reply.status(200).send(`Refeição alterada com sucesso`)
     },
   )
 }
