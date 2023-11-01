@@ -46,9 +46,30 @@ export async function mealsRoutes(app: FastifyInstance) {
       await knex('meals')
         .update(data)
         .where('user_id', userId)
-        .where('id', mealId)
+        .andWhere('id', mealId)
 
       return reply.status(200).send(`Refeição alterada com sucesso`)
+    },
+  )
+
+  app.delete<{ Params: { user_id: string; meal_id: string } }>(
+    '/meals/:user_id/:meal_id',
+    async (request, reply) => {
+      const userId = request.params.user_id
+      const mealId = request.params.meal_id
+
+      const deletedCount = await knex('meals')
+        .where('user_id', userId)
+        .andWhere('id', mealId)
+        .del()
+
+      if (deletedCount === 1) {
+        return reply.status(200).send(`Refeição deletada com sucesso`)
+      } else {
+        return reply
+          .status(404)
+          .send(`Refeição não encontrada ou já foi deletada`)
+      }
     },
   )
 }
