@@ -84,4 +84,19 @@ export async function mealsRoutes(app: FastifyInstance) {
       return reply.status(200).send(datas)
     },
   )
+
+  app.get<{ Params: { user_id: string; meal_id: string } }>(
+    '/meals/:user_id/:meal_id',
+    async (request, reply) => {
+      const userId = request.params.user_id
+      const mealId = request.params.meal_id
+
+      const datas = await knex('meals')
+        .where('user_id', userId)
+        .andWhere('id', mealId)
+        .first()
+
+      return reply.status(200).send(datas)
+    },
+  )
 }
